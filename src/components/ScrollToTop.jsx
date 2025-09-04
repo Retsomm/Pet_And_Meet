@@ -7,7 +7,8 @@ import { useLocation } from "react-router";
  */
 function ScrollToTop() {
   const location = useLocation();
-
+// 當 location.pathname 改變時，執行滾動到頂部的效果
+// scrollTo(x, y) 中的 x 和 y 分別代表水平和垂直方向的滾動位置
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);

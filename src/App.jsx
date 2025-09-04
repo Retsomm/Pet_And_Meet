@@ -11,6 +11,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import { BrowserRouter, Routes, Route } from "react-router";
 import useAuthStore from "./stores/useAuthStore";
 import { useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const { isLoading, init } = useAuthStore();
@@ -24,6 +25,7 @@ function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <Toaster />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="/" element={<Home />} />

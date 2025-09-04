@@ -1,262 +1,117 @@
 # 🐾 動物收養平台
 
-一個現代化的動物收養平台，讓使用者能夠瀏覽、收藏和了解待收養的動物資訊。使用 React + Vite 構建，具備響應式設計和離線功能。
+一個現代化的動物收養平台，讓使用者能夠瀏覽、收藏和了解待收養的動物資訊。使用 React 19 + Vite 6 構建，具備響應式設計、離線功能和進階效能優化。
 
 ## ✨ 主要功能
 
 - 🏠 **首頁展示**：每日推薦動物與領養流程介紹
-- 🔍 **動物瀏覽**：完整的動物資料庫，支援篩選和搜尋
-- ❤️ **收藏功能**：登入用戶可收藏喜愛的動物
-- 👤 **用戶系統**：支援 Google 和 Facebook 登入
-- 📱 **響應式設計**：適配各種設備螢幕
-- 💾 **離線快取**：使用 IndexedDB 提供離線瀏覽體驗
-- 🎨 **主題切換**：支援明暗主題模式
+- 🔍 **動物瀏覽**：完整的動物資料庫，支援即時篩選和搜尋
+- ❤️ **收藏功能**：登入用戶可收藏喜愛的動物，支援雲端同步
+- 👤 **用戶系統**：支援 Google 和 Facebook OAuth 登入
+- 📱 **響應式設計**：適配各種設備螢幕，觸控友好
+- 💾 **智慧快取**：使用 IndexedDB 提供離線瀏覽體驗
+- 🎨 **主題切換**：支援明暗主題模式，跟隨系統設定
+- 🔔 **即時通知**：使用 react-hot-toast 提供優雅的操作反饋
+- ⚡ **效能優化**：懶載入、記憶化組件、智慧快取策略
 
 ## 🛠 技術棧
 
-### 前端框架
+### 前端核心
 
-- **React 19** - 用戶界面庫
-- **Vite 6** - 構建工具和開發服務器
-- **React Router 7** - 路由管理
+- **React 19** - 最新版本用戶界面庫，支援並發特性
+- **Vite 6** - 極速構建工具和開發服務器
+- **React Router 7** - 現代化路由管理
 
-### UI 和樣式
+### UI/UX 設計
 
 - **Tailwind CSS 3** - 原子化 CSS 框架
-- **DaisyUI 4** - Tailwind CSS 組件庫
-- **React Intersection Observer** - 滾動監聽
+- **DaisyUI 4** - 精美的 Tailwind CSS 組件庫
+- **React Hot Toast** - 優雅的通知系統
 
-### 圖片優化
+### 狀態管理與資料處理
 
-- **Cloudinary React SDK** - 圖片 CDN 和自動優化
-- **Cloudinary URL Generator** - 動態圖片 URL 生成
-- **智慧壓縮** - 自動格式選擇（WebP、AVIF）
+- **Zustand 5** - 輕量級狀態管理解決方案
+- **IndexedDB (idb 8)** - 瀏覽器本地資料庫，24 小時智慧快取
+- **自定義 Hooks** - 可重用的業務邏輯封裝
 
-### 後端服務
+### 雲端服務整合
 
-- **Firebase Auth** - 用戶認證
-- **Firebase Realtime Database** - 即時資料庫
-- **Firebase Functions** - 無服務器 API
+- **Firebase 11** - 完整的後端即服務解決方案
+  - **Firebase Auth** - OAuth 認證（Google、Facebook）
+  - **Firebase Realtime Database** - 即時資料同步
+  - **Firebase Functions** - 無服務器 API 端點
+- **政府開放資料 API** - 農業部動物保護資訊網整合
 
-### 數據管理
+### 圖片與媒體優化
 
-- **Zustand** - 狀態管理
-- **IndexedDB (idb)** - 本地數據快取
+- **圖片懶載入** - 滾動到視窗才載入圖片，提升效能
+- **圖片容錯處理** - 載入失敗時自動顯示預設圖片
+- **WebP 格式支援** - 使用現代圖片格式減少檔案大小
+- **響應式圖片** - 適應不同螢幕尺寸的圖片顯示
 
-### 開發工具
+### 開發工具與品質保證
 
-- **ESLint** - 代碼檢查
-- **PostCSS** - CSS 處理
+- **ESLint 9** - 最新代碼品質檢查
+- **PostCSS 8** - CSS 後處理器
 - **Autoprefixer** - CSS 自動前綴
+- **CORS 處理** - 跨域請求支援
 
-## 📁 專案結構
+## 📁 專案架構
 
 ```
 src/
-├── components/          # React 組件
-│   ├── AnimalCard.jsx   # 動物卡片組件
-│   ├── AnimalFilterMenu.jsx # 篩選選單
-│   ├── AnimalSkeleton.jsx   # 載入骨架屏
-│   ├── Dock.jsx         # 底部導航欄
-│   ├── Layout.jsx       # 布局組件
-│   ├── Navbar.jsx       # 頂部導航欄
-│   ├── ProtectedRoute.jsx # 路由保護
-│   └── ThemeToggle.jsx  # 主題切換
-├── hooks/               # 自定義 Hooks
-│   ├── useFavorite.js   # 收藏功能
-│   ├── useFetchAnimals.js # 動物資料獲取
-│   ├── useSyncFavoritesWithAPI.js # 收藏同步
+├── components/              # React 組件庫
+│   ├── AnimalCard.jsx      # 動物卡片組件（收藏、詳情、圖片處理）
+│   ├── AnimalFilterMenu.jsx & AnimalFilterMenu_fixed.jsx # 動物篩選介面
+│   ├── AnimalSkeleton.jsx  # 載入骨架屏，提升用戶體驗
+│   ├── Dock.jsx           # 底部導航欄（手機端友好）
+│   ├── Hero.jsx           # 首頁橫幅展示區域
+│   ├── Layout.jsx         # 全域布局包裝器
+│   ├── Navbar.jsx         # 頂部導航欄（響應式）
+│   ├── ProtectedRoute.jsx # 路由保護組件
+│   ├── ScrollToTop.jsx    # 路由切換自動回頂部
+│   └── ThemeToggle.jsx    # 明暗主題切換器
+│
+├── hooks/                  # 自定義 React Hooks
+│   ├── useFavorite.js     # 收藏功能邏輯（本地+雲端同步）
+│   ├── useFetchAnimals.js # 動物資料獲取（API+快取策略）
+│   ├── usePagination.js   # 分頁邏輯處理
+│   ├── useSyncFavoritesWithAPI.js # 收藏清單雲端同步
 │   └── useUserCollects.js # 用戶收藏管理
-├── pages/               # 頁面組件
-│   ├── Collect.jsx      # 收藏頁面
-│   ├── Data.jsx         # 動物列表頁面
-│   ├── DataItem.jsx     # 動物詳情頁面
-│   ├── Home.jsx         # 首頁
-│   ├── Login.jsx        # 登入頁面
-│   └── Profile.jsx      # 個人資料頁面
-├── stores/              # Zustand 狀態管理
-│   ├── useAuthStore.js  # 認證狀態
-│   └── useThemeStore.js # 主題狀態
-└── utils/               # 工具函數
-    └── filterAnimals.js # 動物篩選邏輯
+│
+├── pages/                  # 路由頁面組件
+│   ├── Collect.jsx        # 個人收藏頁面
+│   ├── Data.jsx           # 動物列表瀏覽頁（篩選、搜尋）
+│   ├── DataItem.jsx       # 動物詳細資料頁面
+│   ├── Home.jsx           # 首頁（推薦動物、流程介紹）
+│   ├── Login.jsx          # 登入頁面（OAuth整合）
+│   └── Profile.jsx        # 個人資料管理頁面
+│
+├── stores/                 # Zustand 狀態管理
+│   ├── useAuthStore.js    # 使用者認證狀態（IndexedDB持久化）
+│   ├── useThemeStore.js   # 主題設定狀態
+│   └── useToastStore.js   # 通知訊息管理（react-hot-toast整合）
+│
+└── utils/                  # 工具函數庫
+    └── filterAnimals.js    # 動物資料篩選與搜尋邏輯
+
+functions/                  # Firebase Cloud Functions
+├── index.js               # API 端點（動物資料、CORS、快取）
+├── package.json           # 後端依賴管理
+└── test-import.js         # API 測試腳本
+
+public/                     # 靜態資源
+├── Cat.webp              # 預設動物圖片
+├── default.webp          # 圖片載入失敗備用圖
+├── favicon.webp          # 網站圖標
+└── PetIcon.webp          # 應用程式圖標
+
+docs/                      # 專案文件
+配置檔案/
+├── eslint.config.js      # ESLint 規則設定
+├── firebase.js           # Firebase 初始化與設定
+├── firebase.json         # Firebase 專案配置
+├── postcss.config.js     # PostCSS 配置
+├── tailwind.config.mjs   # Tailwind CSS 自訂設定
+└── vite.config.js        # Vite 建置配置
 ```
-
-## 🚀 快速開始
-
-### 環境要求
-
-- Node.js 18+
-- npm 或 yarn
-
-### 安裝依賴
-
-```bash
-# 使用 npm
-npm install
-
-# 或使用 yarn
-yarn install
-```
-
-### 環境變數設置
-
-在專案根目錄創建 `.env` 檔案：
-
-```env
-# Firebase 配置
-VITE_FIREBASE_API_KEY=your_api_key
-VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
-VITE_FIREBASE_PROJECT_ID=your_project_id
-VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-VITE_FIREBASE_APP_ID=your_app_id
-VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-
-# Cloudinary 圖片優化配置
-VITE_CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-```
-
-> **圖片優化說明**：本專案整合了 Cloudinary 進行圖片優化，可以大幅減少圖片載入時間並節省頻寬。請至 [Cloudinary](https://cloudinary.com/) 註冊免費帳號並取得您的 Cloud Name。
-
-### 運行開發服務器
-
-```bash
-# 啟動開發服務器
-npm run dev
-
-# 或
-yarn dev
-```
-
-應用程式將在 `http://localhost:5173` 啟動。
-
-### 建置生產版本
-
-```bash
-# 建置生產版本
-npm run build
-
-# 預覽建置結果
-npm run preview
-```
-
-### 代碼檢查
-
-```bash
-# 運行 ESLint
-npm run lint
-```
-
-## 🔧 主要功能說明
-
-### 動物資料快取
-
-應用程式使用 IndexedDB 實現本地快取，提供：
-
-- 24 小時快取有效期
-- 離線瀏覽功能
-- 自動快取更新
-
-### 用戶認證
-
-支援多種登入方式：
-
-- Google 帳號登入
-- Facebook 帳號登入
-- 自動登入狀態保持
-
-### 收藏系統
-
-登入用戶可以：
-
-- 收藏喜愛的動物
-- 在收藏頁面管理收藏列表
-- 資料與 Firebase 同步
-
-### 響應式設計
-
-- 支援手機、平板、桌面設備
-- 適應性布局
-- 觸控友好的操作界面
-
-### 圖片優化系統
-
-本專案整合了先進的 Cloudinary 圖片優化技術：
-
-#### 核心優勢
-
-- **檔案大小減少**：平均減少 70-80% 的圖片檔案大小
-- **載入速度提升**：圖片載入時間減少 60-70%
-- **智慧格式選擇**：自動選擇最佳格式（WebP、AVIF、JPEG）
-- **全球 CDN**：Cloudinary 全球 CDN 加速載入
-
-#### 功能特色
-
-- **自動壓縮**：根據內容和網路條件動態調整品質
-- **響應式圖片**：根據設備和顯示需求調整尺寸
-- **懶載入**：圖片進入視窗才開始載入
-- **佔位符**：低品質佔位符提升用戶體驗
-- **降級機制**：Cloudinary 失效時自動降級到原始圖片
-
-#### 使用範例
-
-```jsx
-import { AnimalCardImage } from "../components/OptimizedImage";
-
-<AnimalCardImage
-  src="https://example.com/pet-image.jpg"
-  alt="可愛的狗狗"
-  className="w-full h-full"
-/>;
-```
-
-詳細使用說明請參考：[Cloudinary SDK 使用指南](./docs/CLOUDINARY_SDK_USAGE.md)
-
-## 🎨 主題系統
-
-應用程式支援明暗主題切換：
-
-- 自動檢測系統主題偏好
-- 手動切換主題
-- 主題設置持久化保存
-
-## 🔄 API 整合
-
-後端 API 託管在 Firebase Functions：
-
-- 動物資料 API
-- 用戶收藏同步
-- 即時資料更新
-
-## 📱 頁面功能
-
-- **首頁**：每日推薦動物、領養流程介紹
-- **動物列表**：完整動物資料庫，支援篩選
-- **動物詳情**：詳細動物資訊和收藏功能
-- **收藏頁面**：管理用戶收藏的動物
-- **登入頁面**：用戶認證入口
-- **個人資料**：用戶資訊管理
-
-## 🤝 貢獻指南
-
-1. Fork 此專案
-2. 創建功能分支：`git checkout -b feature/amazing-feature`
-3. 提交更改：`git commit -m 'Add some amazing feature'`
-4. 推送到分支：`git push origin feature/amazing-feature`
-5. 開啟 Pull Request
-
-## 📄 授權
-
-此專案採用 MIT 授權 - 查看 [LICENSE](LICENSE) 檔案了解詳情。
-
-## 🐛 問題回報
-
-如果發現問題，請在 [Issues](../../issues) 頁面回報。
-
-## 🙏 致謝
-
-- [React](https://reactjs.org/) - 用戶界面庫
-- [Vite](https://vitejs.dev/) - 快速的建置工具
-- [Firebase](https://firebase.google.com/) - 後端服務
-- [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
-- [DaisyUI](https://daisyui.com/) - UI 組件庫

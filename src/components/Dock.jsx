@@ -23,7 +23,6 @@ export default function Dock() {
           </svg>
         </Link>
       </button>
-
       <button>
         <Link to="/data" aria-label="資料庫">
           <svg
@@ -60,7 +59,6 @@ export default function Dock() {
           </svg>
         </Link>
       </button>
-
       <button>
         {isLoggedIn ? (
           <Link to="/profile" className="navLink" aria-label="個人資料">
