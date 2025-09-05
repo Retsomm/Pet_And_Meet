@@ -151,7 +151,7 @@ export default function Collect() {
         <div className="text-center">尚未收藏任何毛孩</div>
       ) : (
         /* 有收藏內容：顯示動物卡片列表 */
-        <div className="flex flex-wrap justify-center items-center">
+        <div className="flex flex-wrap justify-center items-center pb-20 sm:pb-8">
           {/* 
             遍歷有效收藏清單，為每隻動物產生卡片
             

@@ -294,7 +294,7 @@ const Data = () => {
           {/* === 分頁導航區域 === */}
           {/* 條件式渲染：只有在總頁數大於1時才顯示分頁 */}
           {pagination.totalPage > 1 && (
-            <div className="flex justify-center items-center gap-2 my-8">
+            <div className="flex justify-center items-center gap-2 my-8 pb-20 sm:pb-8">
               {/* 上一頁按鈕 */}
               <button
                 className="btn btn-outline btn-sm"
