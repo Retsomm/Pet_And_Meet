@@ -8,7 +8,7 @@ import DataItem from "./pages/DataItem";
 import Collect from "./pages/Collect";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import useAuthStore from "./stores/useAuthStore";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
@@ -28,13 +28,13 @@ function App() {
       <Toaster />
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/data" element={<Data />} />
-          <Route path="/animal/:id" element={<DataItem />} />
-          <Route path="/collect" element={<Collect />} />
-          <Route path="/login" element={<Login />} />
+          <Route index element={<Home />} />
+          <Route path="data" element={<Data />} />
+          <Route path="animal/:id" element={<DataItem />} />
+          <Route path="collect" element={<Collect />} />
+          <Route path="login" element={<Login />} />
           <Route
-            path="/profile"
+            path="profile"
             element={
               <ProtectedRoute>
                 <Profile />
