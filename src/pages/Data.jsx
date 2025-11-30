@@ -158,7 +158,7 @@ const Data = () => {
    * 3. 使用 slice() 切割陣列取得目前頁面的資料
    * 4. 使用 useMemo 優化效能
    */
-  const pageNum = pagination.page || currentPage || 1;
+  const pageNum = currentPage || 1;
   const currentAnimals = useMemo(() => {
     const startIndex = (pageNum - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -299,7 +299,7 @@ const Data = () => {
                 {/* 上一頁按鈕 */}
                 <button
                   className="btn btn-outline btn-sm"
-                  disabled={pagination.page === 1} // 第一頁時禁用
+                  disabled={currentPage === 1} // 第一頁時禁用
                   onClick={pagination.handleClickPrev}
                 >
                   上一頁
@@ -332,7 +332,7 @@ const Data = () => {
                 {/* 下一頁按鈕 */}
                 <button
                   className="btn btn-outline btn-sm"
-                  disabled={pagination.page === pagination.totalPage}
+                  disabled={currentPage === pagination.totalPage}
                   onClick={pagination.handleClickNext}
                 >
                   下一頁
@@ -353,7 +353,7 @@ const Data = () => {
 
                 {/* 第一頁 */}
                 <button
-                  className={`btn btn-sm ${pagination.page === 1 ? 'btn-primary' : 'btn-outline'}`}
+                  className={`btn btn-sm ${currentPage === 1 ? 'btn-primary' : 'btn-outline'}`}
                   onClick={() => setCurrentPage(1)}
                 >
                   1
@@ -362,17 +362,17 @@ const Data = () => {
                 {/* 目前頁（若為第一或最後頁則會與其重複顯示，但樣式會顯示為 active） */}
                 {pagination.totalPage > 2 && (
                   <button
-                    className={`btn btn-sm ${pagination.page !== 1 && pagination.page !== pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
-                    onClick={() => setCurrentPage(pagination.page)}
+                    className={`btn btn-sm ${currentPage !== 1 && currentPage !== pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => setCurrentPage(currentPage)}
                   >
-                    {pagination.page}
+                    {currentPage}
                   </button>
                 )}
 
                 {/* 最後一頁 */}
                 {pagination.totalPage > 1 && (
                   <button
-                    className={`btn btn-sm ${pagination.page === pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
+                    className={`btn btn-sm ${currentPage === pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
                     onClick={() => setCurrentPage(pagination.totalPage)}
                   >
                     {pagination.totalPage}
