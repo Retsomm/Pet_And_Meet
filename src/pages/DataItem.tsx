@@ -47,7 +47,7 @@ export default function DataItem() {
   const { showWarning, showSuccess, showError } = useToastStore();
   const { isLoggedIn } = useAuthStore();
 
-  const animal = React.useMemo(() => animals.find((a: Animal) => String(a.animal_id) === id), [animals, id]);
+  const animal = animals.find((a: Animal) => String(a.animal_id) === id);
 
   const { isCollected, toggleFavorite } = useFavorite(animal as Animal | undefined);
 
@@ -62,7 +62,7 @@ export default function DataItem() {
       <div className="mb-4">
         {Object.entries(animal).map(([key, value]) => (
           <div key={key} className="text-sm border-b py-1 flex">
-            <span className="font-bold w-40">{(keyMap as any)[key] || key}：</span>
+            <span className="font-bold w-40">{keyMap[key] || key}：</span>
             <span className="flex-1 break-all">
               {key === "album_file" ? (
                 <div className="relative w-auto h-full inline-block">
@@ -116,10 +116,11 @@ export default function DataItem() {
 
       <button
         className="btn btn-outline w-full"
-        onClick={() => {
-          if ((location.state as any)?.from === "collect") {
+          onClick={() => {
+          const state = location.state as { from?: string } | undefined;
+          if (state?.from === "collect") {
             navigate("/collect");
-          } else if ((location.state as any)?.from === "/") {
+          } else if (state?.from === "/") {
             navigate("/");
           } else {
             navigate("/data");

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { useFetchAnimals } from "../hooks/useFetchAnimals";
 import { filterAnimals } from "../utils/filterAnimals";
 import AnimalCard from "../components/AnimalCard";
@@ -26,24 +26,24 @@ const Data: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 18;
 
-  const filteredAnimals = useMemo(() => {
+  const filteredAnimals = (() => {
     const result = filterAnimals(animals, filters);
     return Array.isArray(result) ? result : [];
-  }, [animals, filters]);
+  })();
 
-  const varieties = useMemo(() => {
+  const varieties = (() => {
     if (!Array.isArray(animals) || animals.length === 0) return [];
     const set = new Set<string>();
     animals.forEach((a: Animal) => {
       const v = a.animal_Variety;
       if (!v) return;
-      v.split(new RegExp("[,/、]"))
+      v.split(new RegExp("[/,、]"))
         .map((tok) => String(tok || "").trim())
         .forEach((t) => t && set.add(t));
     });
     const arr = Array.from(set).sort();
     return ["全部", ...arr];
-  }, [animals]);
+  })();
 
   const pagination = usePagination({
     page: currentPage,
@@ -54,11 +54,11 @@ const Data: React.FC = () => {
   });
 
   const pageNum = currentPage || 1;
-  const currentAnimals = useMemo(() => {
+  const currentAnimals = (() => {
     const startIndex = (pageNum - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     return Array.isArray(filteredAnimals) ? filteredAnimals.slice(startIndex, endIndex) : [];
-  }, [filteredAnimals, pageNum, itemsPerPage]);
+  })();
 
   React.useEffect(() => {
     setCurrentPage(1);

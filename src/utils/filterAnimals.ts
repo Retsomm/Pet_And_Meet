@@ -9,7 +9,7 @@ export const filterAnimals = (animals: Animal[], filters: Filters) => {
     未知: "N",
   };
 
-  const normalize = (s: any) => String(s || "").replace(/\s+/g, "").toLowerCase();
+  const normalize = (s: unknown) => String(s || "").replace(/\s+/g, "").toLowerCase();
   const colorKeywords: Record<string, string[]> = {
     黑色: ["黑", "黑色"],
     白色: ["白", "白色"],
@@ -38,7 +38,7 @@ export const filterAnimals = (animals: Animal[], filters: Filters) => {
     const animalColor = normalize(animal.animal_colour);
     let colorMatch = true;
     if (selected) {
-      const keywords = (colorKeywords as any)[color] || [color];
+      const keywords = colorKeywords[color as string] || [color as string];
       colorMatch = keywords.some((kw: string) => animalColor.includes(normalize(kw)));
     }
 

@@ -1,21 +1,21 @@
 import { create } from "zustand";
 import { openDB } from "idb";
-import type { StateCreator } from "zustand";
+import type { User } from "../types";
 
 const DB_NAME = "auth-db";
 const STORE_NAME = "auth";
 const USER_KEY = "user";
 
-async function getUserFromIDB(): Promise<any | undefined> {
+async function getUserFromIDB(): Promise<User | undefined> {
   const db = await openDB(DB_NAME, 1, {
     upgrade(db) {
       db.createObjectStore(STORE_NAME);
     },
   });
-  return await db.get(STORE_NAME, USER_KEY);
+  return (await db.get(STORE_NAME, USER_KEY)) as User | undefined;
 }
 
-async function setUserToIDB(user: any) {
+async function setUserToIDB(user: User) {
   const db = await openDB(DB_NAME, 1);
   await db.put(STORE_NAME, user, USER_KEY);
 }
@@ -27,10 +27,10 @@ async function removeUserFromIDB() {
 
 interface AuthState {
   isLoggedIn: boolean;
-  user: any | null;
+  user: User | null;
   isLoading: boolean;
   init: () => Promise<void>;
-  login: (user: any) => Promise<void>;
+  login: (user: User) => Promise<void>;
   logout: () => Promise<void>;
 }
 

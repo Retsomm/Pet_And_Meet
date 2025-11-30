@@ -61,7 +61,7 @@ type Props = {
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
   onConfirm: () => void;
   onReset: () => void;
-  onClose: (e?: any) => void;
+  onClose?: (e?: React.SyntheticEvent) => void;
   varieties?: string[];
 };
 
@@ -80,10 +80,10 @@ const AnimalFilterMenu: React.FC<Props> = ({ filters, setFilters, onConfirm, onR
     <FilterButtonGroup label="毛色" options={COLORS} value={filters.color || ""} onChange={(color) => setFilters((f) => ({ ...f, color }))} className="flex-nowrap" />
 
     <div className="flex gap-4 mt-12">
-      <button className="btn btn-outline flex-1" onClick={(e) => onReset?.()}>重置</button>
-      <button className="btn btn-outline flex-1" onClick={(e) => onConfirm?.()}>確認</button>
+      <button className="btn btn-outline flex-1" onClick={() => onReset?.()}>重置</button>
+      <button className="btn btn-outline flex-1" onClick={() => onConfirm?.()}>確認</button>
     </div>
   </div>
 );
 
-export default React.memo(AnimalFilterMenu);
+export default AnimalFilterMenu;

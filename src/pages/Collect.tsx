@@ -44,8 +44,8 @@ export default function Collect() {
         <div className="text-center">尚未收藏任何毛孩</div>
       ) : (
         <div className="flex flex-wrap justify-center items-center pb-20 sm:pb-8">
-          {validCollects.map((animal: Animal) => (
-            <AnimalCard key={(animal as any).id || String(animal.animal_id)} animal={animal} isCollected={true} from="collect" />
+          {validCollects.map((animal: Animal & { id?: string }) => (
+            <AnimalCard key={animal.id || String(animal.animal_id)} animal={animal} isCollected={true} from="collect" />
           ))}
         </div>
       )}

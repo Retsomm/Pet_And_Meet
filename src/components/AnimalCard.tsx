@@ -2,7 +2,6 @@ import React from "react";
 import { useFavorite } from "../hooks/useFavorite";
 import  useAuthStore  from "../stores/useAuthStore";
 import  useToastStore  from "../stores/useToastStore";
-import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import type { Animal } from "../types";
 
@@ -16,12 +15,12 @@ const AnimalCard: React.FC<Props> = ({ animal, from = "data", isCollected: props
   const { isCollected: collectedState, toggleFavorite } = useFavorite(animal);
   // 支援從父層傳入的 isCollected prop；建立 local state 以便於在切換或重設篩選時保持 UI 一致
   const [collected, setCollected] = React.useState<boolean>(
-    typeof (propsIsCollected as any) !== "undefined" ? (propsIsCollected as boolean) : collectedState
+    typeof propsIsCollected !== 'undefined' ? (propsIsCollected as boolean) : collectedState
   );
 
   // 更新 local collected 當父層 prop 或後端 snapshot 改變時
   React.useEffect(() => {
-    if (typeof (propsIsCollected as any) !== "undefined") {
+    if (typeof propsIsCollected !== 'undefined') {
       setCollected(propsIsCollected as boolean);
     } else {
       setCollected(collectedState);
@@ -50,11 +49,7 @@ const AnimalCard: React.FC<Props> = ({ animal, from = "data", isCollected: props
   };
 
   // 處理 shelter_date 可能為空或無效的情況，避免 formatDistanceToNow 拋出 "Invalid time value"
-  const shelterDate = animal?.shelter_date ? new Date(animal.shelter_date) : null;
-  const shelterDateText =
-    shelterDate instanceof Date && !isNaN(shelterDate.getTime())
-      ? `${formatDistanceToNow(shelterDate)} 前上架`
-      : "上架時間未知";
+  
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -97,7 +92,6 @@ const AnimalCard: React.FC<Props> = ({ animal, from = "data", isCollected: props
 
         <div className="card-body w-1/2 p-4 overflow-hidden">
           <h2 className="card-title truncate">{animal.animal_Variety}</h2>
-
           <p className="truncate">地區：{String(animal.animal_place || "").slice(0, 3)}</p>
           <p>性別：{sexDisplay[animal.animal_sex]}</p>
           <p>顏色：{animal.animal_colour}</p>
@@ -136,4 +130,4 @@ const AnimalCard: React.FC<Props> = ({ animal, from = "data", isCollected: props
   );
 };
 
-export default React.memo(AnimalCard);
+export default AnimalCard;

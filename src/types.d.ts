@@ -27,14 +27,23 @@ export interface Animal {
   cDate?: string;
   shelter_address?: string;
   shelter_tel?: string;
-  // allow other dynamic keys from API
-  [key: string]: any;
+  // allow other dynamic keys from API (use unknown to avoid implicit any)
+  [key: string]: unknown;
+}
+
+export interface User {
+  uid?: string;
+  avatarUrl?: string;
+  displayName?: string;
+  email?: string;
+  // allow additional fields stored in IDB or returned by provider
+  [key: string]: unknown;
 }
 
 export interface UseFetchAnimalsResult {
   animals: Animal[];
   loading: boolean;
-  error: any;
+  error: unknown;
   refetch: () => void;
 }
 
@@ -45,7 +54,7 @@ export interface UseUserCollectsResult {
 
 export interface UseFavoriteResult {
   isCollected: boolean;
-  toggleFavorite: () => Promise<any>;
+  toggleFavorite: () => Promise<boolean>;
   isLoggedIn: boolean;
 }
 

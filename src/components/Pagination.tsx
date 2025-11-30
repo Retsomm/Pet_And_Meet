@@ -1,12 +1,16 @@
 import React from "react";
 
+type PageItem =
+  | { type: 'start-ellipsis' | 'end-ellipsis' }
+  | { type?: 'page'; page: number; isCurrent?: boolean };
+
 type Props = {
   currentPage: number;
   totalPage: number;
   onPageChange?: (page: number) => void;
   onPrev?: () => void;
   onNext?: () => void;
-  items?: any[]; // optional, kept for compatibility with existing Data.jsx usage
+  items?: PageItem[]; // optional, kept for compatibility with existing usePagination output
 };
 
 const Pagination: React.FC<Props> = ({ currentPage, totalPage, onPageChange, onPrev, onNext, items }) => {
@@ -23,14 +27,14 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPage, onPageChange, onP
   };
 
   // 如果上層傳入 items（來自 usePagination, 含省略號標記），使用該陣列渲染
-  const renderFromItems = (itemsArr: any[]) => (
+  const renderFromItems = (itemsArr: PageItem[]) => (
     <div className="flex items-center justify-center gap-2 mb-24 mt-4 sm:my-8 ">
       <button className="btn btn-sm" onClick={handlePrev} disabled={currentPage <= 1}>
         上一頁
       </button>
 
       {itemsArr.map((it, idx) => {
-        if (it.type === "start-ellipsis" || it.type === "end-ellipsis") {
+        if (it.type === 'start-ellipsis' || it.type === 'end-ellipsis') {
           return (
             <span key={idx} className="px-2 text-sm text-muted">
               ...
@@ -38,15 +42,16 @@ const Pagination: React.FC<Props> = ({ currentPage, totalPage, onPageChange, onP
           );
         }
         // page item
-        return (
-          <button
-            key={idx}
-            className={`btn btn-sm ${it.isCurrent ? "btn-primary" : ""}`}
-            onClick={() => onPageChange?.(it.page)}
-          >
-            {it.page}
-          </button>
-        );
+        if ('page' in it) {
+          const page = (it as { page: number }).page;
+          const isCurrent = (it as { isCurrent?: boolean }).isCurrent;
+          return (
+            <button key={idx} className={`btn btn-sm ${isCurrent ? 'btn-primary' : ''}`} onClick={() => onPageChange?.(page)}>
+              {page}
+            </button>
+          );
+        }
+        return null;
       })}
 
       <button className="btn btn-sm" onClick={handleNext} disabled={currentPage >= totalPage}>

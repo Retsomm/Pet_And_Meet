@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { openDB } from "idb";
 import type { Animal, UseFetchAnimalsResult } from "../types";
 
@@ -7,7 +7,7 @@ const DB_NAME = "animal-cache";
 const STORE_NAME = "animals";
 const CACHE_DURATION = 1000 * 60 * 60 * 24; // 24h
 
-async function getCache(): Promise<{ cache: any; expire: string | undefined }> {
+async function getCache(): Promise<{ cache: unknown; expire?: string }> {
   const db = await openDB(DB_NAME, 1, {
     upgrade(db) {
       db.createObjectStore(STORE_NAME);
@@ -18,7 +18,7 @@ async function getCache(): Promise<{ cache: any; expire: string | undefined }> {
   return { cache, expire };
 }
 
-async function setCache(data: any, expire: string) {
+async function setCache(data: unknown, expire: string) {
   const db = await openDB(DB_NAME, 1);
   await db.put(STORE_NAME, data, "data");
   await db.put(STORE_NAME, expire, "expire");
@@ -27,7 +27,7 @@ async function setCache(data: any, expire: string) {
 export function useFetchAnimals(): UseFetchAnimalsResult {
   const [animals, setAnimals] = useState<Animal[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<unknown>(null);
   const [forceRefresh, setForceRefresh] = useState(0);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function useFetchAnimals(): UseFetchAnimalsResult {
         const now = Date.now();
 
         if (cache && expire && now < Number(expire) && forceRefresh === 0) {
-          setAnimals(cache);
+          setAnimals(cache as Animal[]);
           setLoading(false);
           return;
         }
@@ -49,9 +49,9 @@ export function useFetchAnimals(): UseFetchAnimalsResult {
         const data = await response.json();
 
         await setCache(data, String(now + CACHE_DURATION));
-        setAnimals(data);
-      } catch (err: any) {
-        if (err.name !== "AbortError") {
+        setAnimals(data as Animal[]);
+      } catch (err: unknown) {
+        if ((err as { name?: string }).name !== "AbortError") {
           setError(err);
           console.error("Fetch error:", err);
         }
@@ -65,11 +65,11 @@ export function useFetchAnimals(): UseFetchAnimalsResult {
     return () => controller.abort();
   }, [forceRefresh]);
 
-  const refetch = useCallback(() => {
+  function refetch() {
     setLoading(true);
     setError(null);
     setForceRefresh((prev) => prev + 1);
-  }, []);
+  }
 
   return { animals, loading, error, refetch };
 }

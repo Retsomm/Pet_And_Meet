@@ -25,10 +25,12 @@ export function useSyncFavoritesWithAPI(animals: Animal[], isLoading = false) {
         console.log("API animals count:", animals.length);
         console.log("User favorites count:", Object.keys(collects).length);
 
-        const removePromises: Promise<any>[] = [];
-        Object.entries(collects).forEach(([key, item]: [string, any]) => {
-          if (!apiAnimalIds.has(item.animal_id)) {
-            console.log(`Removing outdated favorite: ${item.animal_id}`);
+        const removePromises: Promise<unknown>[] = [];
+        Object.entries(collects).forEach(([key, item]) => {
+          const entry = item as Record<string, unknown>;
+          const animalId = entry['animal_id'] as string | number | undefined;
+          if (animalId !== undefined && !apiAnimalIds.has(animalId)) {
+            console.log(`Removing outdated favorite: ${animalId}`);
             removePromises.push(remove(ref(db, `users/${user.uid}/collects/${key}`)));
           }
         });

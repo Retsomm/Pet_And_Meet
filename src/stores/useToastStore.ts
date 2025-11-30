@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import toast from "react-hot-toast";
 
-type ToastOptions = any;
+type ToastOptions = Record<string, unknown>;
 
 interface ToastState {
   showSuccess: (message: string, options?: ToastOptions) => void;

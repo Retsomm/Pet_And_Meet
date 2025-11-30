@@ -5,15 +5,21 @@ import { db } from "../../firebase";
 import type { Animal, UseUserCollectsResult } from "../types";
 
 export function useUserCollects(): UseUserCollectsResult {
-  const [collects, setCollects] = useState<(Animal & { id?: string })[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Initialize based on current auth state to avoid calling setState
+  // synchronously inside an effect when there's no user.
+  const initialUser = getAuth().currentUser;
+  const [collects, setCollects] = useState<(Animal & { id?: string })[] | null>(
+    () => (initialUser ? null : [])
+  );
+  const [loading, setLoading] = useState(() => (initialUser ? true : false));
 
   useEffect(() => {
     const auth = getAuth();
     const user = auth.currentUser;
     if (!user) {
-      setCollects([]);
-      setLoading(false);
+      // No user — nothing to subscribe to. We avoid calling setState here
+      // synchronously because the initial state already reflects the
+      // unauthenticated value.
       return;
     }
 
@@ -21,8 +27,12 @@ export function useUserCollects(): UseUserCollectsResult {
     const unsubscribe = onValue(collectsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const collectsWithId = Object.values(data).map((item: any) => ({ ...item, id: item.animal_id }));
-        setCollects(collectsWithId as (Animal & { id?: string })[]);
+        const entries = Object.values(data) as unknown[];
+        const collectsWithId = entries.map((entry) => {
+          const item = entry as Animal & { id?: string };
+          return { ...item, id: item.animal_id } as Animal & { id?: string };
+        });
+        setCollects(collectsWithId);
       } else {
         setCollects([]);
       }
