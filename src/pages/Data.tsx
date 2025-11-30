@@ -45,6 +45,31 @@ const Data: React.FC = () => {
     return ["全部", ...arr];
   })();
 
+  // Build per-type variety lists so the filter menu can show only relevant varieties
+  const varietiesByType = (() => {
+    if (!Array.isArray(animals) || animals.length === 0) return { cat: ["全部"], dog: ["全部"], other: ["全部"] };
+    const catSet = new Set<string>();
+    const dogSet = new Set<string>();
+    const otherSet = new Set<string>();
+
+    animals.forEach((a: Animal) => {
+      const v = a.animal_Variety;
+      if (!v) return;
+      const kinds = v.split(new RegExp("[/,、]")).map((tok) => String(tok || "").trim());
+      // Determine kind by the animal_kind field
+      const kind = String(a.animal_kind || "");
+      kinds.forEach((tok) => {
+        if (!tok) return;
+        if (kind.includes("貓")) catSet.add(tok);
+        else if (kind.includes("狗")) dogSet.add(tok);
+        else otherSet.add(tok);
+      });
+    });
+
+    const toArr = (s: Set<string>) => ["全部", ...Array.from(s).sort()];
+    return { cat: toArr(catSet), dog: toArr(dogSet), other: toArr(otherSet) };
+  })();
+
   const pagination = usePagination({
     page: currentPage,
     pageSize: itemsPerPage,
@@ -89,6 +114,7 @@ const Data: React.FC = () => {
           onReset={handleReset}
           onClose={() => setShowFilter(false)}
           varieties={varieties}
+          varietiesByType={varietiesByType}
         />
       )}
 

@@ -63,9 +63,24 @@ type Props = {
   onReset: () => void;
   onClose?: (e?: React.SyntheticEvent) => void;
   varieties?: string[];
+  varietiesByType?: {
+    cat?: string[];
+    dog?: string[];
+    other?: string[];
+  };
 };
 
-const AnimalFilterMenu: React.FC<Props> = ({ filters, setFilters, onConfirm, onReset, onClose, varieties }) => (
+const AnimalFilterMenu: React.FC<Props> = ({ filters, setFilters, onConfirm, onReset, onClose, varieties, varietiesByType }) => {
+  const fallback = VARIETIES;
+  const chosenVarieties = (() => {
+    const t = filters.type;
+    if (t === "貓") return (varietiesByType?.cat && varietiesByType.cat.length > 0) ? varietiesByType.cat : fallback;
+    if (t === "狗") return (varietiesByType?.dog && varietiesByType.dog.length > 0) ? varietiesByType.dog : fallback;
+    if (t === "其他") return (varietiesByType?.other && varietiesByType.other.length > 0) ? varietiesByType.other : fallback;
+    return (varieties && varieties.length > 0) ? varieties : fallback;
+  })();
+
+  return (
   <div className="fixed w-screen h-screen top-0 left-0 z-50 p-8 bg-base-100 overflow-y-auto">
     <div className="flex justify-between items-center mb-8">
       <h2 className="text-2xl font-bold">篩選條件</h2>
@@ -76,7 +91,7 @@ const AnimalFilterMenu: React.FC<Props> = ({ filters, setFilters, onConfirm, onR
     <FilterButtonGroup label="種類" options={TYPES} value={filters.type || ""} onChange={(type) => setFilters((f) => ({ ...f, type }))} className="flex-nowrap" />
     <FilterButtonGroup label="性別" options={SEXES} value={filters.sex || ""} onChange={(sex) => setFilters((f) => ({ ...f, sex }))} className="flex-nowrap" />
     <FilterButtonGroup label="體型" options={BODY_TYPES} value={filters.bodytype || ""} onChange={(bodytype) => setFilters((f) => ({ ...f, bodytype }))} className="flex-nowrap" />
-    <FilterButtonGroup label="品種" options={varieties && Array.isArray(varieties) && varieties.length > 0 ? varieties : VARIETIES} value={filters.variety || ""} onChange={(variety) => setFilters((f) => ({ ...f, variety }))} className="flex-nowrap" />
+    <FilterButtonGroup label="品種" options={chosenVarieties} value={filters.variety || ""} onChange={(variety) => setFilters((f) => ({ ...f, variety }))} className="flex-nowrap" />
     <FilterButtonGroup label="毛色" options={COLORS} value={filters.color || ""} onChange={(color) => setFilters((f) => ({ ...f, color }))} className="flex-nowrap" />
 
     <div className="flex gap-4 mt-12">
@@ -84,6 +99,7 @@ const AnimalFilterMenu: React.FC<Props> = ({ filters, setFilters, onConfirm, onR
       <button className="btn btn-outline flex-1" onClick={() => onConfirm?.()}>確認</button>
     </div>
   </div>
-);
+  );
+}
 
 export default AnimalFilterMenu;
