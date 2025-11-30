@@ -293,56 +293,103 @@ const Data = () => {
           {/* === 分頁導航區域 === */}
           {/* 條件式渲染：只有在總頁數大於1時才顯示分頁 */}
           {pagination.totalPage > 1 && (
-            <div className="flex justify-center items-center gap-2 my-8 pb-20 sm:pb-8">
-              {/* 上一頁按鈕 */}
-              <button
-                className="btn btn-outline btn-sm"
-                disabled={pagination.page === 1} // 第一頁時禁用
-                onClick={pagination.handleClickPrev}
-              >
-                上一頁
-              </button>
+            <>
+              {/* Desktop & Tablet: 原有完整分頁（sm 及以上可見） */}
+              <div className="hidden sm:flex justify-center items-center gap-2 my-8 pb-20 sm:pb-8">
+                {/* 上一頁按鈕 */}
+                <button
+                  className="btn btn-outline btn-sm"
+                  disabled={pagination.page === 1} // 第一頁時禁用
+                  onClick={pagination.handleClickPrev}
+                >
+                  上一頁
+                </button>
 
-              {/* 頁碼按鈕和省略號區域 */}
-              {/* 
-                遍歷分頁項目陣列，根據項目類型渲染不同內容
-                項目類型包括：page（頁碼）、start-ellipsis（開始省略號）、end-ellipsis（結束省略號）
-              */}
-              {pagination.items.map((item, idx) => {
-                if (item.type === "page") {
-                  // 渲染頁碼按鈕
-                  return (
-                    <PageButton
-                      key={item.page} // 使用頁碼作為 key
-                      pageNum={item.page} // 頁碼數字
-                      isActive={item.isCurrent} // 是否為當前頁面
-                      onClick={setCurrentPage} // 點擊處理函數
-                    />
-                  );
-                } else if (
-                  item.type === "start-ellipsis" ||
-                  item.type === "end-ellipsis"
-                ) {
-                  // 渲染省略號
-                  return (
-                    <span key={"ellipsis-" + idx} className="px-2">
-                      ...
-                    </span>
-                  );
-                }
-                // 未知類型項目不渲染任何內容
-                return null;
-              })}
+                {/* 頁碼按鈕和省略號區域（原有邏輯） */}
+                {pagination.items.map((item, idx) => {
+                  if (item.type === "page") {
+                    return (
+                      <PageButton
+                        key={item.page}
+                        pageNum={item.page}
+                        isActive={item.isCurrent}
+                        onClick={setCurrentPage}
+                      />
+                    );
+                  } else if (
+                    item.type === "start-ellipsis" ||
+                    item.type === "end-ellipsis"
+                  ) {
+                    return (
+                      <span key={"ellipsis-" + idx} className="px-2">
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                })}
 
-              {/* 下一頁按鈕 */}
-              <button
-                className="btn btn-outline btn-sm"
-                disabled={pagination.page === pagination.totalPage} // 最後一頁時禁用
-                onClick={pagination.handleClickNext}
-              >
-                下一頁
-              </button>
-            </div>
+                {/* 下一頁按鈕 */}
+                <button
+                  className="btn btn-outline btn-sm"
+                  disabled={pagination.page === pagination.totalPage}
+                  onClick={pagination.handleClickNext}
+                >
+                  下一頁
+                </button>
+              </div>
+
+              {/* Mobile: 精簡分頁（僅顯示 左箭頭、第一頁、目前頁、最後一頁、右箭頭） */}
+              <div className="flex sm:hidden justify-center items-center gap-2 my-8 pb-20">
+                {/* 左箭頭 (上一頁) */}
+                <button
+                  className="btn btn-ghost btn-sm"
+                  aria-label="上一頁"
+                  disabled={pagination.page === 1}
+                  onClick={pagination.handleClickPrev}
+                >
+                  ◀
+                </button>
+
+                {/* 第一頁 */}
+                <button
+                  className={`btn btn-sm ${pagination.page === 1 ? 'btn-primary' : 'btn-outline'}`}
+                  onClick={() => setCurrentPage(1)}
+                >
+                  1
+                </button>
+
+                {/* 目前頁（若為第一或最後頁則會與其重複顯示，但樣式會顯示為 active） */}
+                {pagination.totalPage > 2 && (
+                  <button
+                    className={`btn btn-sm ${pagination.page !== 1 && pagination.page !== pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => setCurrentPage(pagination.page)}
+                  >
+                    {pagination.page}
+                  </button>
+                )}
+
+                {/* 最後一頁 */}
+                {pagination.totalPage > 1 && (
+                  <button
+                    className={`btn btn-sm ${pagination.page === pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => setCurrentPage(pagination.totalPage)}
+                  >
+                    {pagination.totalPage}
+                  </button>
+                )}
+
+                {/* 右箭頭 (下一頁) */}
+                <button
+                  className="btn btn-ghost btn-sm"
+                  aria-label="下一頁"
+                  disabled={pagination.page === pagination.totalPage}
+                  onClick={pagination.handleClickNext}
+                >
+                  ▶
+                </button>
+              </div>
+            </>
           )}
         </>
       )}
