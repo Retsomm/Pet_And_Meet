@@ -20,6 +20,7 @@ import { useUserCollects } from "../hooks/useUserCollects";
 import AnimalFilterMenu from "../components/AnimalFilterMenu";
 import AnimalSkeleton from "../components/AnimalSkeleton";
 import { usePagination } from "../hooks/usePagination";
+import Pagination from "../components/Pagination";
 
 /**
  * 動物資料載入骨架組件
@@ -56,16 +57,7 @@ const AnimalSkeletons = ({ count = 9 }) => (
  * @param {Function} props.onClick - 點擊事件處理函數
  * @returns {JSX.Element} 分頁按鈕元件
  */
-const PageButton = React.memo(({ pageNum, isActive, onClick }) => (
-  <button
-    className={`btn btn-sm ${
-      isActive ? "btn-primary" : "btn-outline" // 當前頁面使用主要樣式，其他頁面使用外框樣式
-    }`}
-    onClick={() => onClick(pageNum)} // 點擊時傳遞頁碼到父元件
-  >
-    {pageNum}
-  </button>
-));
+// PageButton 已移至 `src/components/Pagination.jsx`
 
 /**
  * 動物資料頁面主元件
@@ -109,7 +101,7 @@ const Data = () => {
    * type: 動物種類篩選
    * sex: 性別篩選
    */
-  const [filters, setFilters] = useState({ area: "", type: "", sex: "" });
+  const [filters, setFilters] = useState({ area: "", type: "", sex: "", color: "", bodytype: "", variety: "" });
 
   /** 目前頁碼，預設為第一頁 */
   const [currentPage, setCurrentPage] = useState(1);
@@ -131,6 +123,23 @@ const Data = () => {
     const result = filterAnimals(animals, filters);
     return Array.isArray(result) ? result : [];
   }, [animals, filters]);
+
+  // 從 animals 動態萃取唯一品種列表，作為品種篩選選項
+  const varieties = useMemo(() => {
+    if (!Array.isArray(animals) || animals.length === 0) return [];
+    const set = new Set();
+    animals.forEach((a) => {
+      const v = a.animal_Variety;
+      if (!v) return;
+      // 有些品種欄位可能用 /、,、、等分隔多個品種
+      v.split(new RegExp('[,/、]')).forEach((tok) => {
+        const t = String(tok || "").trim();
+        if (t) set.add(t);
+      });
+    });
+    const arr = Array.from(set).sort();
+    return ["全部", ...arr];
+  }, [animals]);
 
   /**
    * 分頁邏輯處理
@@ -213,7 +222,7 @@ const Data = () => {
    * - 顯示所有動物資料
    */
   const handleReset = () => {
-    setFilters({ area: "", type: "", sex: "" });
+    setFilters({ area: "", type: "", sex: "", color: "", bodytype: "", variety: "" });
   };
 
   // === JSX 渲染區域 ===
@@ -246,6 +255,7 @@ const Data = () => {
           onConfirm={handleFilter} // 確認篩選的處理函數
           onReset={handleReset} // 重設篩選的處理函數
           onClose={() => setShowFilter(false)} // 關閉選單的處理函數
+          varieties={varieties}
         />
       )}
 
@@ -266,7 +276,24 @@ const Data = () => {
               遍歷目前頁面的動物資料，為每隻動物產生卡片
               使用 map() 方法將資料陣列轉換為 JSX 元素陣列
             */}
-            {currentAnimals.map((animal) => {
+            {currentAnimals.length === 0 ? (
+              <div className="w-full text-center py-16">
+                <p className="text-lg font-medium">找不到符合條件的毛孩</p>
+                <p className="text-sm text-muted mt-2">請嘗試放寬篩選條件或重設篩選。</p>
+                <div className="mt-4 flex justify-center">
+                  <button
+                    className="btn btn-outline"
+                    onClick={() => {
+                      handleReset();
+                      setShowFilter(false);
+                    }}
+                  >
+                    清除篩選
+                  </button>
+                </div>
+              </div>
+            ) : (
+              currentAnimals.map((animal) => {
               /**
                * 檢查動物收藏狀態
                *
@@ -287,109 +314,19 @@ const Data = () => {
                   from="data" // 來源標識，用於區分不同頁面的行為
                 />
               );
-            })}
+            }))}
           </div>
 
-          {/* === 分頁導航區域 === */}
-          {/* 條件式渲染：只有在總頁數大於1時才顯示分頁 */}
+          {/* === 分頁導航區域（抽出到 Pagination 元件） === */}
           {pagination.totalPage > 1 && (
-            <>
-              {/* Desktop & Tablet: 原有完整分頁（sm 及以上可見） */}
-              <div className="hidden sm:flex justify-center items-center gap-2 my-8 pb-20 sm:pb-8">
-                {/* 上一頁按鈕 */}
-                <button
-                  className="btn btn-outline btn-sm"
-                  disabled={currentPage === 1} // 第一頁時禁用
-                  onClick={pagination.handleClickPrev}
-                >
-                  上一頁
-                </button>
-
-                {/* 頁碼按鈕和省略號區域（原有邏輯） */}
-                {pagination.items.map((item, idx) => {
-                  if (item.type === "page") {
-                    return (
-                      <PageButton
-                        key={item.page}
-                        pageNum={item.page}
-                        isActive={item.isCurrent}
-                        onClick={setCurrentPage}
-                      />
-                    );
-                  } else if (
-                    item.type === "start-ellipsis" ||
-                    item.type === "end-ellipsis"
-                  ) {
-                    return (
-                      <span key={"ellipsis-" + idx} className="px-2">
-                        ...
-                      </span>
-                    );
-                  }
-                  return null;
-                })}
-
-                {/* 下一頁按鈕 */}
-                <button
-                  className="btn btn-outline btn-sm"
-                  disabled={currentPage === pagination.totalPage}
-                  onClick={pagination.handleClickNext}
-                >
-                  下一頁
-                </button>
-              </div>
-
-              {/* Mobile: 精簡分頁（僅顯示 左箭頭、第一頁、目前頁、最後一頁、右箭頭） */}
-              <div className="flex sm:hidden justify-center items-center gap-2 my-8 pb-20">
-                {/* 左箭頭 (上一頁) */}
-                <button
-                  className="btn btn-ghost btn-sm"
-                  aria-label="上一頁"
-                  disabled={pagination.page === 1}
-                  onClick={pagination.handleClickPrev}
-                >
-                  ◀
-                </button>
-
-                {/* 第一頁 */}
-                <button
-                  className={`btn btn-sm ${currentPage === 1 ? 'btn-primary' : 'btn-outline'}`}
-                  onClick={() => setCurrentPage(1)}
-                >
-                  1
-                </button>
-
-                {/* 目前頁（若為第一或最後頁則會與其重複顯示，但樣式會顯示為 active） */}
-                {pagination.totalPage > 2 && (
-                  <button
-                    className={`btn btn-sm ${currentPage !== 1 && currentPage !== pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
-                    onClick={() => setCurrentPage(currentPage)}
-                  >
-                    {currentPage}
-                  </button>
-                )}
-
-                {/* 最後一頁 */}
-                {pagination.totalPage > 1 && (
-                  <button
-                    className={`btn btn-sm ${currentPage === pagination.totalPage ? 'btn-primary' : 'btn-outline'}`}
-                    onClick={() => setCurrentPage(pagination.totalPage)}
-                  >
-                    {pagination.totalPage}
-                  </button>
-                )}
-
-                {/* 右箭頭 (下一頁) */}
-                <button
-                  className="btn btn-ghost btn-sm"
-                  aria-label="下一頁"
-                  disabled={pagination.page === pagination.totalPage}
-                  onClick={pagination.handleClickNext}
-                >
-                  ▶
-                </button>
-              </div>
-            </>
+            <Pagination
+              totalPage={pagination.totalPage}
+              currentPage={currentPage}
+              items={pagination.items}
+              onPageChange={setCurrentPage}
+              onPrev={pagination.handleClickPrev}
+              onNext={pagination.handleClickNext}
+            />
           )}
         </>
       )}

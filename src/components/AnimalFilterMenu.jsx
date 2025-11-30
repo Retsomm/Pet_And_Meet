@@ -50,6 +50,33 @@ const TYPES = ["全部", "貓", "狗", "其他"];
 const SEXES = ["全部", "公", "母", "未知"];
 
 /**
+ * 動物毛色選項常數陣列
+ * "全部" 代表不進行毛色篩選
+ */
+const COLORS = [
+  "全部",
+  "黑色",
+  "白色",
+  "棕色",
+  "灰色",
+  "虎斑",
+  "三色",
+  "花色",
+  "其他",
+];
+
+/**
+ * 動物體型選項
+ */
+const BODY_TYPES = ["全部", "小型", "中型", "大型", "未知"];
+
+/**
+ * 動物品種選項（簡化）
+ * 注意：品種可能非常多，這裡只放常見/範例選項，必要時可改為動態從資料中萃取
+ */
+const VARIETIES = ["全部", "混種", "短毛", "長毛", "其他"];
+
+/**
  * 可重複使用的篩選按鈕群組元件
  *
  * 功能說明：
@@ -118,6 +145,7 @@ const FilterButtonGroup = ({
  * @param {string} props.filters.area - 地區篩選條件
  * @param {string} props.filters.type - 種類篩選條件
  * @param {string} props.filters.sex - 性別篩選條件
+ * @param {string} props.filters.color - 毛色篩選條件
  * @param {Function} props.setFilters - 更新篩選條件的函數
  * @param {Function} props.onConfirm - 確認篩選時觸發的回調函數
  * @param {Function} props.onReset - 重置篩選時觸發的回調函數
@@ -130,6 +158,7 @@ const AnimalFilterMenu = ({
   onConfirm,
   onReset,
   onClose,
+  varieties, // optional prop: list of variety options from parent
 }) => (
   // 全螢幕覆蓋層，使用 fixed 定位占滿整個視窗
   <div className="fixed w-screen h-screen top-0 left-0 z-50 p-8 bg-base-100 overflow-y-auto">
@@ -175,6 +204,33 @@ const AnimalFilterMenu = ({
       options={SEXES}
       value={filters.sex}
       onChange={(sex) => setFilters((f) => ({ ...f, sex }))}
+      className="flex-nowrap"
+    />
+
+    {/* 體型篩選區塊 */}
+    <FilterButtonGroup
+      label="體型"
+      options={BODY_TYPES}
+      value={filters.bodytype}
+      onChange={(bodytype) => setFilters((f) => ({ ...f, bodytype }))}
+      className="flex-nowrap"
+    />
+
+    {/* 品種篩選區塊 */}
+    <FilterButtonGroup
+      label="品種"
+      options={varieties && Array.isArray(varieties) && varieties.length > 0 ? varieties : VARIETIES}
+      value={filters.variety}
+      onChange={(variety) => setFilters((f) => ({ ...f, variety }))}
+      className="flex-nowrap"
+    />
+
+    {/* 毛色篩選區塊 */}
+    <FilterButtonGroup
+      label="毛色"
+      options={COLORS}
+      value={filters.color}
+      onChange={(color) => setFilters((f) => ({ ...f, color }))}
       className="flex-nowrap"
     />
 

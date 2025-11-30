@@ -37,7 +37,7 @@ export const filterAnimals = (animals, filters) => {
    */
   const result = animals.filter((animal) => {
     // 解構賦值取得篩選條件，提高程式碼可讀性
-    const { area, type, sex } = filters;
+      const { area, type, sex, color, bodytype, variety } = filters;
 
     /**
      * 地區篩選邏輯
@@ -80,11 +80,41 @@ export const filterAnimals = (animals, filters) => {
     const sexMatch = !sex || animal.animal_sex === sexMap[sex];
 
     /**
+     * 毛色篩選（改進版）
+     * - 支援部分詞語匹配與常見變體，例如 "黑色" 可匹配 "黑","黑白相間" 等
+     * - 使用關鍵字映射提高匹配率
+     */
+    const normalize = (s) => (String(s || "").replace(/\s+/g, "").toLowerCase());
+    const colorKeywords = {
+      黑色: ["黑", "黑色"],
+      白色: ["白", "白色"],
+      棕色: ["棕", "棕色", "茶"],
+      灰色: ["灰", "灰色"],
+      虎斑: ["虎", "虎斑", "斑"],
+      三色: ["三色"],
+      花色: ["花", "花色"],
+      其他: ["其他"],
+    };
+    const selected = normalize(color);
+    const animalColor = normalize(animal.animal_colour);
+    let colorMatch = true;
+    if (selected) {
+      const keywords = colorKeywords[color] || [color];
+      colorMatch = keywords.some((kw) => animalColor.includes(normalize(kw)));
+    }
+
+    // 體型比對（簡單 includes）
+    const bodyTypeMatch = !bodytype || (normalize(animal.animal_bodytype || "").includes(normalize(bodytype)));
+
+    // 品種比對（簡單 includes）
+    const varietyMatch = !variety || (normalize(animal.animal_Variety || "").includes(normalize(variety)));
+
+    /**
      * 綜合篩選結果
      * 只有當所有篩選條件都通過時，該動物才會被保留在結果中
      * 使用 && 運算子確保所有條件都必須滿足
      */
-    return areaMatch && typeMatch && sexMatch;
+    return areaMatch && typeMatch && sexMatch && colorMatch && bodyTypeMatch && varietyMatch;
   });
   
   // 回傳篩選後的結果陣列
