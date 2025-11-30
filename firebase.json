@@ -13,7 +13,7 @@
       }
     ],
     "predeploy": [
-      "npm run build"
+      "yarn build"
     ]
   },
   "functions": [
@@ -28,7 +28,7 @@
         "*.local"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint"
+        "yarn --cwd \"$RESOURCE_DIR\" lint"
       ]
     }
   ]

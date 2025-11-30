@@ -3,7 +3,6 @@ import { useEffect, useState, useCallback } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../../firebase";
 import { ref, onValue, query, orderByChild, equalTo, get, remove, push, set } from "firebase/database";
-
 /**
  * useFavorite
  * 管理單一動物的收藏狀態與切換收藏功能
@@ -15,9 +14,8 @@ export function useFavorite(animal) {
   const [isCollected, setIsCollected] = useState(false);
   // isLoggedIn: 使用者是否已登入
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // 監聽 Firebase Auth 狀態，更新登入狀態
-  useEffect(() => {
+// 監聽 Firebase Auth 狀態，更新登入狀態
+useEffect(() => {
     const auth = getAuth();
     // 註冊登入狀態監聽
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
@@ -50,7 +48,8 @@ export function useFavorite(animal) {
     });
     // 卸載時移除監聽
     return () => unsubscribe();
-  }, [animal?.animal_id]);
+  // 若 animal 物件其他屬性變動也需觸發，請改為 [animal]
+  }, [animal]);
 
   /**
    * 切換收藏狀態
@@ -59,7 +58,8 @@ export function useFavorite(animal) {
   const toggleFavorite = useCallback(async () => {
     const auth = getAuth();
     const user = auth.currentUser;
-    if (!user) return false; // 未登入不執行
+    if (!user) return; // 未登入不執行
+    try {
 
     const collectsRef = ref(db, `users/${user.uid}/collects`);
     if (!isCollected) {
@@ -78,11 +78,19 @@ export function useFavorite(animal) {
       const q = query(collectsRef, orderByChild("animal_id"), equalTo(animal.animal_id));
       const snapshot = await get(q);
       if (snapshot.exists()) {
+        const removePromises = [];
         snapshot.forEach(child => {
-          remove(ref(db, `users/${user.uid}/collects/${child.key}`));
+          removePromises.push(remove(ref(db, `users/${user.uid}/collects/${child.key}`)));
         });
+        await Promise.all(removePromises);
       }
     }
+    } catch (error){
+      console.error(error);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // animal 與 isCollected 已在依賴陣列，避免因 showError 或其他未變動的外部依賴導致不必要的 re-render
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animal, isCollected]);
 
   // 回傳收藏狀態、切換函式、登入狀態

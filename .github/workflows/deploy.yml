@@ -18,18 +18,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Install functions dependencies
         run: |
           rm -f functions/package-lock.json
-          npm install --prefix functions
+          yarn install --cwd functions
 
       - name: Run linting
-        run: npm run lint
+        run: yarn lint
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master

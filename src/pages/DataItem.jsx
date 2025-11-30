@@ -4,6 +4,7 @@ import { useFetchAnimals } from "../hooks/useFetchAnimals";
 import { useFavorite } from "../hooks/useFavorite";
 import useToastStore from "../stores/useToastStore";
 import useAuthStore from "../stores/useAuthStore";
+
 /**
  * 動物資料欄位對應中文名稱的對照表
  * 用於將 API 回傳的英文欄位名稱轉換為使用者友善的中文顯示名稱
@@ -105,7 +106,7 @@ export default function DataItem() {
   )}`;
 
   return (
-    <div className="max-w-xl mx-auto mt-10 bg-base-100 shadow-lg rounded-lg p-6">
+    <div className="max-w-xl mx-auto mt-10 bg-base-100 shadow-lg rounded-lg sm:p-6 pb-20">
       <div className="mb-4">
         {/* 
           動物資料顯示區塊

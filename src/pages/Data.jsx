@@ -214,7 +214,6 @@ const Data = () => {
    */
   const handleReset = () => {
     setFilters({ area: "", type: "", sex: "" });
-    setShowFilter(false);
   };
 
   // === JSX 渲染區域 ===
